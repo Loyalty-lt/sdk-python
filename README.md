@@ -1,6 +1,6 @@
 # Loyalty.lt Python SDK
 
-Official Python SDK for [Loyalty.lt](https://loyalty.lt) Partner API.
+Official Python SDK for [Loyalty.lt](https://loyalty.lt) Shop API.
 
 [![PyPI version](https://badge.fury.io/py/loyaltylt-sdk.svg)](https://badge.fury.io/py/loyaltylt-sdk)
 [![Python Version](https://img.shields.io/pypi/pyversions/loyaltylt-sdk.svg)](https://pypi.org/project/loyaltylt-sdk/)
@@ -38,8 +38,8 @@ print(shops['data'])
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `api_key` | str | required | Partner API Key |
-| `api_secret` | str | required | Partner API Secret |
+| `api_key` | str | required | API Key |
+| `api_secret` | str | required | API Secret |
 | `environment` | str | `production` | `production` or `staging` |
 | `locale` | str | `lt` | API locale (`lt`, `en`) |
 | `timeout` | int | `30` | Request timeout in seconds |

@@ -1,5 +1,5 @@
 """
-Loyalty.lt SDK for Python - Official Partner API client.
+Loyalty.lt SDK for Python - Official Shop API client.
 
 Usage:
     from loyalty_sdk import LoyaltySDK

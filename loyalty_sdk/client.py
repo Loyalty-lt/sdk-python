@@ -1,5 +1,5 @@
 """
-Official Loyalty.lt SDK for Python - Partner API client.
+Official Loyalty.lt SDK for Python - Shop API client.
 """
 
 import time
@@ -12,7 +12,7 @@ from .exceptions import LoyaltySDKError, LoyaltyAPIError
 
 class LoyaltySDK:
     """
-    Main SDK client for Loyalty.lt Partner API.
+    Main SDK client for Loyalty.lt Shop API.
     
     Provides complete access to partner functionality including QR Login,
     QR Card Scan, transactions, offers, and more.
@@ -37,8 +37,8 @@ class LoyaltySDK:
         Initialize the Loyalty SDK.
         
         Args:
-            api_key: Partner API Key (required)
-            api_secret: Partner API Secret (required)
+            api_key: API Key (required)
+            api_secret: API Secret (required)
             environment: 'production' or 'staging' (default: 'production')
             locale: Language locale - 'lt' or 'en' (default: 'lt')
             timeout: Request timeout in seconds (default: 30)
@@ -81,7 +81,7 @@ class LoyaltySDK:
         return f"{self.base_url}/{self.locale}/shop"
     
     # ===================
-    # QR LOGIN (Partner API)
+    # QR LOGIN (Shop API)
     # ===================
     
     def generate_qr_login(
@@ -140,7 +140,7 @@ class LoyaltySDK:
         })
     
     # ===================
-    # QR CARD SCAN (Partner API)
+    # QR CARD SCAN (Shop API)
     # ===================
     
     def generate_qr_card_session(
@@ -176,7 +176,7 @@ class LoyaltySDK:
         return self._request('GET', f'/qr-card/status/{session_id}')
     
     # ===================
-    # ABLY REAL-TIME (Partner API)
+    # ABLY REAL-TIME (Shop API)
     # ===================
     
     def get_ably_token(self, session_id: str) -> Dict[str, Any]:
@@ -194,7 +194,7 @@ class LoyaltySDK:
         })
     
     # ===================
-    # SHOPS (Partner API)
+    # SHOPS (Shop API)
     # ===================
     
     def get_shops(self, **filters) -> Dict[str, Any]:
@@ -210,7 +210,7 @@ class LoyaltySDK:
         return self._request('GET', '/shops', params=filters)
     
     # ===================
-    # LOYALTY CARDS (Partner API)
+    # LOYALTY CARDS (Shop API)
     # ===================
     
     def get_loyalty_cards(self, **filters) -> Dict[str, Any]:
@@ -262,7 +262,7 @@ class LoyaltySDK:
         return self._request('GET', '/loyalty-cards/balance', params=params)
     
     # ===================
-    # TRANSACTIONS (Partner API)
+    # TRANSACTIONS (Shop API)
     # ===================
     
     def create_transaction(
@@ -319,7 +319,7 @@ class LoyaltySDK:
         return self._request('GET', '/transactions', params=filters)
     
     # ===================
-    # OFFERS (Partner API)
+    # OFFERS (Shop API)
     # ===================
     
     def get_offers(self, **filters) -> Dict[str, Any]:
@@ -365,7 +365,7 @@ class LoyaltySDK:
         return self._request('GET', '/categories')
     
     # ===================
-    # XML IMPORT (Partner API)
+    # XML IMPORT (Shop API)
     # ===================
     
     def import_from_url(self, url: str, **options) -> Dict[str, Any]:
@@ -394,7 +394,7 @@ class LoyaltySDK:
         return self._request('GET', '/xml-import/stats')
     
     # ===================
-    # SYSTEM (Partner API)
+    # SYSTEM (Shop API)
     # ===================
     
     def validate_credentials(self) -> Dict[str, Any]:
