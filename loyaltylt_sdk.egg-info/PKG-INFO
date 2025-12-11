@@ -1,3 +1,48 @@
+Metadata-Version: 2.4
+Name: loyaltylt-sdk
+Version: 1.0.0
+Summary: Official Python SDK for Loyalty.lt Partner API
+Home-page: https://github.com/Loyalty-lt/sdk-python
+Author: Loyalty.lt
+Author-email: developers@loyalty.lt
+Project-URL: Bug Tracker, https://github.com/Loyalty-lt/sdk-python/issues
+Project-URL: Documentation, https://docs.loyalty.lt/sdk/python
+Project-URL: Homepage, https://loyalty.lt
+Keywords: loyalty,points,rewards,sdk,api,pos,qr-login
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.28.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # Loyalty.lt Python SDK
 
 Official Python SDK for [Loyalty.lt](https://loyalty.lt) Partner API.
@@ -112,7 +157,7 @@ cards = sdk.get_loyalty_cards()
 card = sdk.get_loyalty_card(123)
 
 # Get card by number
-card_info = sdk.get_loyalty_card_info(card_number='123-456-789')
+card_info = sdk.get_loyalty_card_info(card_number='LOYALTY123456')
 
 # Get points balance
 balance = sdk.get_points_balance(card_id=123)
@@ -130,6 +175,9 @@ transaction = sdk.create_transaction(
     description='Purchase reward',
     reference='ORDER-12345'
 )
+
+# Deduct points
+sdk.deduct_points(card_id=123, points=100, description='Points redemption')
 
 # Get transactions
 transactions = sdk.get_transactions(card_id=123, type='earn')
@@ -177,7 +225,7 @@ stats = sdk.get_import_stats()
 from loyalty_sdk import LoyaltySDKError, LoyaltyAPIError
 
 try:
-    result = sdk.get_loyalty_card_info(card_number='INVALID')
+    result = sdk.deduct_points(card_id=123, points=10000)
 except LoyaltyAPIError as e:
     print(f"Error: {e.message}")
     print(f"Code: {e.code}")

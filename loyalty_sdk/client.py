@@ -306,29 +306,6 @@ class LoyaltySDK:
         """
         return self._request('POST', '/transactions/award-points', data)
     
-    def deduct_points(
-        self,
-        card_id: int,
-        points: int,
-        description: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        Deduct points.
-        
-        Args:
-            card_id: Loyalty card ID
-            points: Points to deduct
-            description: Optional description
-            
-        Returns:
-            Transaction data dict
-        """
-        return self._request('POST', '/transactions/deduct-points', {
-            'card_id': card_id,
-            'points': points,
-            'description': description or 'Points deduction',
-        })
-    
     def get_transactions(self, **filters) -> Dict[str, Any]:
         """
         Get partner transactions.
