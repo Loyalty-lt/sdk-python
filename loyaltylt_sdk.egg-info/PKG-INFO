@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: loyaltylt-sdk
-Version: 1.0.0
+Version: 1.0.2
 Summary: Official Python SDK for Loyalty.lt Partner API
 Home-page: https://github.com/Loyalty-lt/sdk-python
 Author: Loyalty.lt
@@ -157,7 +157,7 @@ cards = sdk.get_loyalty_cards()
 card = sdk.get_loyalty_card(123)
 
 # Get card by number
-card_info = sdk.get_loyalty_card_info(card_number='LOYALTY123456')
+card_info = sdk.get_loyalty_card_info(card_number='123-456-789')
 
 # Get points balance
 balance = sdk.get_points_balance(card_id=123)
@@ -175,9 +175,6 @@ transaction = sdk.create_transaction(
     description='Purchase reward',
     reference='ORDER-12345'
 )
-
-# Deduct points
-sdk.deduct_points(card_id=123, points=100, description='Points redemption')
 
 # Get transactions
 transactions = sdk.get_transactions(card_id=123, type='earn')
@@ -225,7 +222,7 @@ stats = sdk.get_import_stats()
 from loyalty_sdk import LoyaltySDKError, LoyaltyAPIError
 
 try:
-    result = sdk.deduct_points(card_id=123, points=10000)
+    result = sdk.get_loyalty_card_info(card_number='INVALID')
 except LoyaltyAPIError as e:
     print(f"Error: {e.message}")
     print(f"Code: {e.code}")
