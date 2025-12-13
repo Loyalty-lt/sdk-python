@@ -18,7 +18,7 @@ class LoyaltySDK:
     QR Card Scan, transactions, offers, and more.
     """
     
-    VERSION = "2.0.0"
+    VERSION = "1.0.4"
     DEFAULT_TIMEOUT = 30
     DEFAULT_RETRIES = 3
     
@@ -300,12 +300,6 @@ class LoyaltySDK:
         }
         return self._request('POST', '/transactions/create', data)
     
-    def award_points(self, **data) -> Dict[str, Any]:
-        """
-        Award points (alias for create_transaction).
-        """
-        return self._request('POST', '/transactions/award-points', data)
-    
     def get_transactions(self, **filters) -> Dict[str, Any]:
         """
         Get partner transactions.
@@ -392,6 +386,215 @@ class LoyaltySDK:
         Get import statistics.
         """
         return self._request('GET', '/xml-import/stats')
+    
+    # ===================
+    # GAMES (Shop API)
+    # ===================
+    
+    def list_games(self, shop_id: int, **filters) -> Dict[str, Any]:
+        """
+        List games for a shop.
+        
+        Args:
+            shop_id: Shop ID
+            **filters: Optional filters (type, per_page, page)
+        """
+        return self._request('GET', '/games', params={'shop_id': shop_id, **filters})
+    
+    def get_game(self, game_id: int, card_id: int) -> Dict[str, Any]:
+        """
+        Get single game with progress.
+        """
+        return self._request('GET', f'/games/{game_id}', params={'card_id': card_id})
+    
+    def get_card_games(self, card_id: int, shop_id: Optional[int] = None) -> List[Dict]:
+        """
+        Get games for a loyalty card.
+        
+        Args:
+            card_id: Loyalty card ID
+            shop_id: Optional shop ID filter
+        """
+        params = {'shop_id': shop_id} if shop_id else {}
+        return self._request('GET', f'/cards/{card_id}/games', params=params)
+    
+    def get_game_progress(self, game_id: int, card_id: int) -> Dict[str, Any]:
+        """
+        Get current game progress.
+        """
+        return self._request('GET', f'/games/{game_id}/progress', params={'card_id': card_id})
+    
+    def add_stamps(
+        self, 
+        game_id: int, 
+        card_id: int, 
+        shop_id: int, 
+        stamps_count: int = 1
+    ) -> Dict[str, Any]:
+        """
+        Add stamps to a stamp card game.
+        
+        Args:
+            game_id: Game ID
+            card_id: Loyalty card ID
+            shop_id: Shop ID
+            stamps_count: Number of stamps to add (default: 1)
+            
+        Returns:
+            Dict with current_step, is_completed, reward info
+        """
+        return self._request('POST', f'/games/{game_id}/add-stamps', {
+            'card_id': card_id,
+            'shop_id': shop_id,
+            'stamps_count': stamps_count,
+        })
+    
+    def complete_game(self, game_id: int, card_id: int) -> Dict[str, Any]:
+        """
+        Complete a stamp card game and generate reward.
+        """
+        return self._request('POST', f'/games/{game_id}/complete', {'card_id': card_id})
+    
+    def restart_game(self, game_id: int, card_id: int, shop_id: int) -> Dict[str, Any]:
+        """
+        Restart a game (reset progress).
+        """
+        return self._request('POST', f'/games/{game_id}/restart', {
+            'card_id': card_id,
+            'shop_id': shop_id,
+        })
+    
+    def get_game_history(self, card_id: int, shop_id: Optional[int] = None) -> List[Dict]:
+        """
+        Get customer's game history.
+        """
+        params = {'shop_id': shop_id} if shop_id else {}
+        return self._request('GET', f'/cards/{card_id}/games/history', params=params)
+    
+    # ===================
+    # COUPONS (Shop API)
+    # ===================
+    
+    def list_coupons(self, **filters) -> Dict[str, Any]:
+        """
+        List coupons.
+        
+        Args:
+            **filters: Optional filters (status, user_id, card_id, etc.)
+        """
+        return self._request('GET', '/coupons', params=filters)
+    
+    def verify_coupon(self, coupon_code: str, shop_id: int) -> Dict[str, Any]:
+        """
+        Verify a coupon code.
+        
+        Args:
+            coupon_code: Coupon code to verify
+            shop_id: Shop ID
+            
+        Returns:
+            Coupon details including offer/game info, owner, card
+        """
+        return self._request('POST', '/coupons/verify', {
+            'code': coupon_code,
+            'shop_id': shop_id,
+        })
+    
+    def redeem_coupon(
+        self, 
+        coupon_id: int, 
+        shop_id: int,
+        selected_product_id: Optional[int] = None,
+        notes: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        Redeem a coupon.
+        
+        Args:
+            coupon_id: Coupon ID
+            shop_id: Shop ID
+            selected_product_id: Product ID for multi-product rewards
+            notes: Optional redemption notes
+        """
+        return self._request('POST', '/coupons/redeem', {
+            'coupon_id': coupon_id,
+            'shop_id': shop_id,
+            'selected_product_id': selected_product_id,
+            'notes': notes,
+        })
+    
+    def set_coupon_pending(
+        self, 
+        coupon_id: int, 
+        shop_id: int,
+        selected_product_id: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """
+        Set coupon to pending status.
+        """
+        return self._request('POST', '/coupons/pending', {
+            'coupon_id': coupon_id,
+            'shop_id': shop_id,
+            'selected_product_id': selected_product_id,
+        })
+    
+    def cancel_pending_coupon(self, coupon_id: int, shop_id: int) -> Dict[str, Any]:
+        """
+        Cancel a pending coupon.
+        """
+        return self._request('POST', '/coupons/cancel-pending', {
+            'coupon_id': coupon_id,
+            'shop_id': shop_id,
+        })
+    
+    def get_card_coupons(
+        self, 
+        shop_id: int, 
+        card_id: Optional[int] = None,
+        user_id: Optional[int] = None
+    ) -> Dict[str, Any]:
+        """
+        Get coupons for a card/user at a shop.
+        
+        Args:
+            shop_id: Shop ID
+            card_id: Optional loyalty card ID
+            user_id: Optional user ID
+        """
+        return self._request('GET', '/coupons/card', params={
+            'shop_id': shop_id,
+            'card_id': card_id,
+            'user_id': user_id,
+        })
+    
+    def get_coupon_products(self, coupon_id: int) -> Dict[str, Any]:
+        """
+        Get products available for coupon redemption.
+        
+        Returns:
+            Dict with products list and selection_required flag
+        """
+        return self._request('GET', '/coupons/products', params={'coupon_id': coupon_id})
+    
+    def calculate_coupon_discount(
+        self, 
+        coupon_code: str, 
+        purchase_amount: float,
+        cart_items: Optional[List[Dict]] = None
+    ) -> Dict[str, Any]:
+        """
+        Calculate discount amount for a coupon.
+        
+        Args:
+            coupon_code: Coupon code
+            purchase_amount: Total purchase amount
+            cart_items: Optional cart items for product-specific discounts
+        """
+        return self._request('POST', '/coupons/calculate-discount', {
+            'coupon_code': coupon_code,
+            'purchase_amount': purchase_amount,
+            'cart_items': cart_items,
+        })
     
     # ===================
     # SYSTEM (Shop API)

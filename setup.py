@@ -7,7 +7,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="loyaltylt-sdk",
-    version="1.0.3",
+    version="1.0.4",
     author="Loyalty.lt",
     author_email="developers@loyalty.lt",
     description="Official Python SDK for Loyalty.lt Shop API",

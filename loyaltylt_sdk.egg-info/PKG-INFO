@@ -1,3 +1,48 @@
+Metadata-Version: 2.4
+Name: loyaltylt-sdk
+Version: 1.0.3
+Summary: Official Python SDK for Loyalty.lt Shop API
+Home-page: https://github.com/Loyalty-lt/sdk-python
+Author: Loyalty.lt
+Author-email: developers@loyalty.lt
+Project-URL: Bug Tracker, https://github.com/Loyalty-lt/sdk-python/issues
+Project-URL: Documentation, https://docs.loyalty.lt/sdk/python
+Project-URL: Homepage, https://loyalty.lt
+Keywords: loyalty,points,rewards,sdk,api,pos,qr-login
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Python: >=3.8
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests>=2.28.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.0.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: flake8>=6.0.0; extra == "dev"
+Requires-Dist: mypy>=1.0.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: keywords
+Dynamic: license-file
+Dynamic: project-url
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
 # Loyalty.lt Python SDK
 
 Official Python SDK for [Loyalty.lt](https://loyalty.lt) Shop API.
@@ -206,12 +251,12 @@ def get_loyalty_sdk():
 # views.py
 from .services import get_loyalty_sdk
 
-def process_transaction(request):
+def award_points(request):
     sdk = get_loyalty_sdk()
     transaction = sdk.create_transaction(
         card_id=request.POST['card_id'],
         amount=request.POST['amount'],
-        shop_id=request.POST['shop_id']
+        points=int(request.POST['amount'])
     )
     return JsonResponse(transaction)
 ```
@@ -230,13 +275,13 @@ sdk = LoyaltySDK(
     api_secret=os.environ['LOYALTY_API_SECRET']
 )
 
-@app.route('/transaction', methods=['POST'])
-def process_transaction():
+@app.route('/award-points', methods=['POST'])
+def award_points():
     data = request.json
     transaction = sdk.create_transaction(
         card_id=data['card_id'],
         amount=data['amount'],
-        shop_id=data['shop_id']
+        points=data['points']
     )
     return jsonify(transaction)
 ```
