@@ -44,7 +44,7 @@ class LoyaltySDK:
             timeout: Request timeout in seconds (default: 30)
             retries: Number of retry attempts (default: 3)
             debug: Enable debug logging (default: False)
-            base_url: Override base URL (optional)
+            base_url: Deprecated, ignored - URL is determined by environment
         """
         if not api_key:
             raise LoyaltySDKError("API Key is required", "INVALID_CONFIG")
@@ -58,13 +58,13 @@ class LoyaltySDK:
         self.retries = retries
         self.debug = debug
         
-        if base_url:
-            self.base_url = base_url.rstrip('/')
-        else:
-            self.base_url = (
-                "https://staging-api.loyalty.lt" if environment == "staging"
-                else "https://api.loyalty.lt"
-            )
+        # Base URL is determined by environment - not configurable
+        # production = https://api.loyalty.lt
+        # staging = https://staging-api.loyalty.lt
+        self.base_url = (
+            "https://staging-api.loyalty.lt" if environment == "staging"
+            else "https://api.loyalty.lt"
+        )
         
         self.session = requests.Session()
         self.session.headers.update({
