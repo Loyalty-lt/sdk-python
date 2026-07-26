@@ -1,0 +1,38 @@
+name: Publish to PyPI
+
+# Runs on every v* tag. `workflow_dispatch` takes no inputs on purpose: it
+# builds whatever ref it is dispatched from, so there is no user-supplied
+# string anywhere in this file.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build tooling
+        run: python -m pip install --upgrade build twine
+
+      - name: Build sdist and wheel
+        run: python -m build
+
+      - name: Check metadata
+        run: python -m twine check dist/*
+
+      - name: Publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: python -m twine upload dist/*
