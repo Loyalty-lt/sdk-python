@@ -176,22 +176,22 @@ class LoyaltySDK:
         return self._request('GET', f'/qr-card/status/{session_id}')
     
     # ===================
-    # ABLY REAL-TIME (Shop API)
+    # REALTIME (Shop API)
     # ===================
     
-    def get_ably_token(self, session_id: str) -> Dict[str, Any]:
+    def get_realtime_config(self) -> Dict[str, Any]:
         """
-        Get Ably token for real-time updates.
+        Get Laravel Reverb connection details for real-time updates.
         
-        Args:
-            session_id: QR login or QR card scan session ID
-            
+        The QR channels are public — the unguessable session id in the channel
+        name is the secret — so no per-session token is issued. Subscribe to
+        ``qr-login.{session_id}`` or ``qr-card.{session_id}`` and bind
+        ``status_update``.
+        
         Returns:
-            Dict with token, channel
+            Dict with key, host, port, scheme
         """
-        return self._request('POST', '/ably/token', {
-            'session_id': session_id,
-        })
+        return self._request('GET', '/realtime/config')
     
     # ===================
     # SHOPS (Shop API)

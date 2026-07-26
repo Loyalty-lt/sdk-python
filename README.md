@@ -81,15 +81,17 @@ if result['status'] == 'completed':
     print(f"Points: {card['points_balance']}")
 ```
 
-### Real-time Updates with Ably
+### Real-time Updates (Laravel Reverb)
 
 ```python
-# Get Ably token
-ably_token = sdk.get_ably_token(session['session_id'])
+# Reverb connection details — no per-session token is needed, the QR channels
+# are public and the unguessable session id is the secret.
+config = sdk.get_realtime_config()
 
-# Use with Ably client
-print(ably_token['token'])
-print(ably_token['channel'])
+print(config['key'])                                  # Reverb app key (public)
+print(f"wss://{config['host']}:{config['port']}")     # wss://ws.loyalty.lt:443
+print(f"qr-login.{session['session_id']}")            # channel to subscribe to
+# Bind the `status_update` event with any Pusher-protocol client.
 ```
 
 ### Shops
