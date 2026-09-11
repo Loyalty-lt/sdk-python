@@ -267,37 +267,65 @@ class LoyaltySDK:
     
     def create_transaction(
         self,
-        card_id: int,
-        amount: float,
-        points: int,
-        transaction_type: str = 'earn',
+        order_id: str,
+        user_id: Optional[int] = None,
+        user_email: Optional[str] = None,
+        order_total: Optional[float] = None,
+        points: Optional[int] = None,
+        transaction_type: str = 'purchase',
+        currency: Optional[str] = None,
         description: Optional[str] = None,
-        reference: Optional[str] = None,
+        shop_id: Optional[int] = None,
+        loyalty_card_id: Optional[int] = None,
+        points_redeemed: Optional[int] = None,
+        points_discount_amount: Optional[float] = None,
+        cart_items: Optional[List[Dict]] = None,
+        meta_data: Optional[Dict] = None,
         **kwargs
     ) -> Dict[str, Any]:
         """
-        Create transaction (award points).
-        
+        Register a purchase and award loyalty points.
+
         Args:
-            card_id: Loyalty card ID
-            amount: Transaction amount
-            points: Points to award
-            transaction_type: 'earn' or 'redeem'
-            description: Optional description
-            reference: Optional reference (order ID, etc.)
-            
+            order_id: Your order reference (required)
+            user_id: Customer user ID (required unless user_email is given)
+            user_email: Customer email (required unless user_id is given)
+            order_total: Order total; points are calculated from it when points is omitted
+            points: Award this exact number of points instead of calculating
+            transaction_type: 'purchase', 'cancellation' or 'refund'
+            currency: ISO 4217 currency code, e.g. 'EUR'
+            description: Free-text note stored with the transaction
+            shop_id: Shop where the purchase happened
+            loyalty_card_id: Card to credit; resolved automatically when omitted
+            points_redeemed: Points the customer spent on this order
+            points_discount_amount: Discount value of the redeemed points
+            cart_items: Purchased line items
+            meta_data: Arbitrary key/value data stored with the transaction
+
         Returns:
             Transaction data dict
         """
+        if user_id is None and user_email is None:
+            raise ValueError('create_transaction requires user_id or user_email')
+
         data = {
-            'card_id': card_id,
-            'amount': amount,
+            'order_id': order_id,
+            'user_id': user_id,
+            'user_email': user_email,
+            'order_total': order_total,
             'points': points,
             'type': transaction_type,
+            'currency': currency,
             'description': description,
-            'reference': reference,
+            'shop_id': shop_id,
+            'loyalty_card_id': loyalty_card_id,
+            'points_redeemed': points_redeemed,
+            'points_discount_amount': points_discount_amount,
+            'cart_items': cart_items,
+            'meta_data': meta_data,
             **kwargs
         }
+        data = {k: v for k, v in data.items() if v is not None}
         return self._request('POST', '/transactions/create', data)
     
     def get_transactions(self, **filters) -> Dict[str, Any]:
@@ -356,7 +384,7 @@ class LoyaltySDK:
         """
         Get offer categories.
         """
-        return self._request('GET', '/categories')
+        return self._request('GET', '/products/categories')
     
     # ===================
     # XML IMPORT (Shop API)
