@@ -8,6 +8,7 @@ from urllib.parse import urljoin, urlencode
 import requests
 
 from .exceptions import LoyaltySDKError, LoyaltyAPIError
+from .realtime import RealtimeSubscriber
 
 
 class LoyaltySDK:
@@ -628,6 +629,53 @@ class LoyaltySDK:
     # SYSTEM (Shop API)
     # ===================
     
+    # ===================
+    # REALTIME
+    # ===================
+
+    def subscribe_qr_login(self, session_id: str, callback=None, timeout: int = 300):
+        """
+        Wait on the QR login channel instead of polling it.
+
+        Without a callback it blocks until the session resolves and returns the final
+        payload — on success that carries `token` and `user`. With a callback it is
+        invoked as `(event, payload)` for every frame; return something truthy to stop.
+
+        Returns None if the session neither completed nor expired within `timeout`.
+
+        >>> result = sdk.subscribe_qr_login(session['session_id'])
+        >>> if result and result['status'] == 'authenticated':
+        ...     token = result['token']
+        """
+        return self._subscribe('qr-login.' + session_id, callback, timeout)
+
+    def subscribe_qr_card(self, session_id: str, callback=None, timeout: int = 300):
+        """
+        Wait on the QR card scan channel. Resolves with the frame carrying `card_data`.
+        """
+        return self._subscribe('qr-card.' + session_id, callback, timeout)
+
+    def _subscribe(self, channel: str, callback, timeout: int):
+        config = self.get_realtime_config()
+        config = config.get('data', config) if isinstance(config, dict) else config
+
+        subscriber = RealtimeSubscriber(config, channel, events=[])
+
+        if callback is not None:
+            return subscriber.listen(callback, timeout=timeout)
+
+        # Default: settle on the first frame that ends the session.
+        terminal = {'authenticated', 'expired', 'failed', 'cancelled'}
+
+        def settle(event, payload):
+            if event == 'card_identified':
+                return payload
+            if payload.get('status') in terminal:
+                return payload
+            return None
+
+        return subscriber.listen(settle, timeout=timeout)
+
     def validate_credentials(self) -> Dict[str, Any]:
         """
         Validate API credentials.
